@@ -1,0 +1,61 @@
+# Credentials and sensitive data
+data/config/credentials.json
+data/config/*.json
+data/mappings/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Dependencies
+bin/
+obj/
+*.dll
+*.exe
+
+# IDEs
+.vs/
+.vscode/
+*.swp
+*.swo
+*~
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Build outputs
+dist/
+build/
+
+# Docker
+.docker/
+
+# User-specific files
+*.user
+*.suo
+
+# Visual Studio cache
+.vs/
+
+# ReSharper cache
+.resharper
+
+# NuGet
+*.nupkg
+*.snupkg
+
+# Rider
+.idea/
+*.sln.iml
+
+# Local package managers
+node_modules/
+package-lock.json
+yarn.lock
