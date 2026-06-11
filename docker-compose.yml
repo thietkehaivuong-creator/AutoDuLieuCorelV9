@@ -1,0 +1,32 @@
+version: '3.9'
+
+services:
+  api:
+    build:
+      context: ./AutoDuLieuApi
+      dockerfile: Dockerfile
+    container_name: auto-du-lieu-api
+    ports:
+      - "5000:5000"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:5000
+      - Api__BaseUrl=https://api.havuco.com
+      - Api__Username=${API_USERNAME:-ma.thach}
+      - Api__Password=${API_PASSWORD:-Anhthu123!!!}
+    volumes:
+      - ./data:/app/data
+      - ./config:/app/config
+    networks:
+      - autodata-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/api/data/all"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  autodata-net:
+    driver: bridge
