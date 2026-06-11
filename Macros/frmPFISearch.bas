@@ -189,7 +189,7 @@ Private Sub btnSearch_Click()
     Dim response As String
     response = CallAPI("GET", url, "")
     
-    If InStr(response, """success"":true") > 0 Then
+    If InStr(response, "\"success\":true") > 0 Then
         DisplayData response, pfi
         Me.Controls("lblStatus").Caption = "Tim thay du lieu cho PFI: " & pfi
     Else
@@ -212,13 +212,11 @@ Private Sub DisplayData(jsonResponse As String, pfi As String)
     Set gridData = Me.Controls("gridData")
     gridData.Clear
     
-    ' Parse JSON thong tin (simplified)
     Dim headers As Variant
     headers = Array("Customer", "PFI", "Lo", "Description", "Sizes", "Qty", "SPEC", _
                     "Xn_Tem_Hang", "Ng_DG_tu", "Ng_DG", "Best_Before", "Nguon_NL", _
                     "FAO", "haTGDB", "PP_DB", "Lot_No", "Remark", "NLT_ve", "TGDB_NK", "Packing")
     
-    ' Hien thi du lieu tu demo
     Dim i As Long
     Dim fieldValue As String
     
@@ -226,10 +224,8 @@ Private Sub DisplayData(jsonResponse As String, pfi As String)
         Dim fieldName As String
         fieldName = CStr(headers(i))
         
-        ' Gia su data duoc tra ve tu API
         fieldValue = ExtractJSONField(jsonResponse, fieldName)
         
-        ' Format dates
         If IsDateField(fieldName) And fieldValue <> "" Then
             Dim targetFormat As String
             targetFormat = Me.Controls("cmbDateFormat").Text
@@ -242,9 +238,8 @@ Private Sub DisplayData(jsonResponse As String, pfi As String)
 End Sub
 
 Private Function ExtractJSONField(json As String, fieldName As String) As String
-    ' Simplified JSON extraction - find "fieldname":"value"
     Dim pattern As String
-    pattern = """" & fieldName & """:""([^""]*)"""
+    pattern = "\"" & fieldName & "\":\"([^\"]*)\""
     
     Dim start As Long
     start = InStr(json, pattern)
@@ -255,10 +250,10 @@ Private Function ExtractJSONField(json As String, fieldName As String) As String
     End If
     
     Dim beginQuote As Long
-    beginQuote = InStr(start, json, """") + 1
+    beginQuote = InStr(start, json, "\"") + 1
     
     Dim endQuote As Long
-    endQuote = InStr(beginQuote, json, """")
+    endQuote = InStr(beginQuote, json, "\"")
     
     If endQuote > beginQuote Then
         ExtractJSONField = Mid(json, beginQuote, endQuote - beginQuote)
@@ -283,13 +278,12 @@ Private Function FormatDateViaAPI(inputDate As String, targetFormat As String) A
     url = apiBaseUrl & "/data/format-date"
     
     Dim payload As String
-    payload = "{""inputDate"":""" & inputDate & """,""targetFormat"":""" & targetFormat & """}"
+    payload = "{\"inputDate\":\"" & inputDate & "\",\"targetFormat\":\"" & targetFormat & "\"}"
     
     Dim response As String
     response = CallAPI("POST", url, payload)
     
-    If InStr(response, """success"":true") > 0 Then
-        ' Extract formatted date from response
+    If InStr(response, "\"success\":true") > 0 Then
         Dim formattedDate As String
         formattedDate = ExtractJSONField(response, "formattedDate")
         If formattedDate <> "" Then
@@ -370,15 +364,14 @@ Private Sub btnInsertCorel_Click()
         Exit Sub
     End If
     
-    ' Insert text vao CorelDRAW
     Dim pfi As String
     Dim customer As String
     Dim description As String
     Dim text As String
     
-    pfi = gridData.List(1, 1) ' PFI la dong 2
-    customer = gridData.List(0, 1) ' Customer la dong 1
-    description = gridData.List(3, 1) ' Description la dong 4
+    pfi = gridData.List(1, 1)
+    customer = gridData.List(0, 1)
+    description = gridData.List(3, 1)
     
     text = "PFI: " & pfi & vbCrLf & _
            "Customer: " & customer & vbCrLf & _
@@ -408,10 +401,6 @@ End Sub
 Private Sub btnClose_Click()
     Unload Me
 End Sub
-
-' ============================================================
-' UTILITY FUNCTIONS
-' ============================================================
 
 Private Function CallAPI(method As String, url As String, payload As String) As String
     Dim xmlHttp As Object
